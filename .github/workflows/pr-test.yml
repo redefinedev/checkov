@@ -20,12 +20,19 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 3.7
+      - name: install reprofiler
+        run: |
+           echo "REPROFILER_API_KEY=demo_api_key" >> $GITHUB_ENV
+           curl -s https://redefine-installation-public.s3.eu-west-1.amazonaws.com/reprofiler/install_reprofiler.sh | bash
+           mkdir /tmp/reprofiler/demo_api_key
       - name: Install cfn-lint
         run: |
           pip install -U cfn-lint
       - name: Lint Cloudformation templates
         run: |
           cfn-lint tests/cloudformation/checks/resource/aws/**/* -i W
+      - name: check reprofiler
+        run: cat /tmp/reprofiler_server.log
 
   mypy:
     runs-on: ubuntu-latest
