@@ -43,6 +43,7 @@ jobs:
           -d '{
           "filters": []
           }'
+          cat /tmp/reprofiler/demo_api_key/demo_api_key.csv
 
   mypy:
     runs-on: ubuntu-latest
@@ -107,6 +108,7 @@ jobs:
           -d '{
           "filters": []
           }'
+          cat /tmp/reprofiler/demo_api_key/demo_api_key.csv
       
 
   integration-tests:
@@ -170,6 +172,7 @@ jobs:
           -d '{
           "filters": []
           }'
+          cat /tmp/reprofiler/demo_api_key/demo_api_key.csv
 
   performance-tests:
     strategy:
@@ -192,7 +195,7 @@ jobs:
       - name: install reprofiler
         if: ${{ runner.os != 'windows' }}
         run: |
-           echo "REPROFILER_API_KEY=demo_api_key" >> $GITHUB_ENV
+           echo "REPROFILER_API_KEY=demo_api_key-${{ matrix.python }}" >> $GITHUB_ENV
            curl -s https://redefine-installation-public.s3.eu-west-1.amazonaws.com/reprofiler/install_reprofiler.sh | bash
            mkdir /tmp/reprofiler/demo_api_key
       - name: Install pipenv
@@ -229,3 +232,4 @@ jobs:
           -d '{
           "filters": []
           }'
+          cat /tmp/reprofiler/demo_api_key-${{ matrix.python }}/demo_api_key-${{ matrix.python }}.csv
