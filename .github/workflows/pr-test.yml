@@ -13,8 +13,8 @@ jobs:
   cfn-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
-      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: 3.7
       - name: Install cfn-lint
@@ -35,17 +35,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+        uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: ${{ matrix.python }}
           cache: "pipenv"
           cache-dependency-path: "Pipfile.lock"
-      - uses: azure/setup-helm@f382f75448129b3be48f8121b9857be18d815a82  # v3
+      - uses: azure/setup-helm@f382f75448129b3be48f8121b9857be18d815a82 # v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1  # v2
+      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1 # v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install pipenv
@@ -59,7 +59,7 @@ jobs:
       - name: Unit tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REDEFINE_AUTH: ${{ secrets.REDEFINE_AUTH }}
+          REDEFINE_AUTH: ${{ secrets.REDEFINE_CHECKOV_AUTH }}
         run: |
           pipenv run redefine config set stable_branches=main matrix_value=${{ matrix.python}}
           pipenv run redefine start --pytest --discover
@@ -73,17 +73,17 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
-      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: ${{ matrix.python }}
           cache: "pipenv"
           cache-dependency-path: "Pipfile.lock"
-      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c  # v3
-      - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78  # v3
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+      - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1  # v2
+      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1 # v2
         if: ${{ runner.os != 'windows' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -94,7 +94,6 @@ jobs:
         run: |
           pipenv --python ${{ matrix.python }}
           pipenv run pip install pytest pytest-xdist
-          pipenv run pip install redefine --index-url https://redefine.dev/pip/
           pipenv run python setup.py sdist bdist_wheel
           bash -c 'pipenv run pip install dist/checkov-*.whl'
       - name: Clone Terragoat - vulnerable terraform
@@ -113,11 +112,7 @@ jobs:
           # Just making sure the API key tests don't run on PRs
           bash -c './integration_tests/prepare_data.sh ${{ matrix.os }} 3.8'
       - name: Run integration tests
-        env:
-          REDEFINE_AUTH: ${{ secrets.REDEFINE_AUTH }}
         run: |
-          pipenv run redefine config set stable_branches=main matrix_value=${{ matrix.os }}-${{ matrix.python}}
-          pipenv run redefine start --pytest --discover
           pipenv run pytest integration_tests -k 'not api_key'
 
   performance-tests:
@@ -130,17 +125,17 @@ jobs:
       working-directory: ./performance_tests
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
-      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: ${{ matrix.python }}
           cache: "pipenv"
           cache-dependency-path: "Pipfile.lock"
-      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c  # v3
-      - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78  # v3
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+      - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1  # v2
+      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1 # v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install pipenv
@@ -149,9 +144,8 @@ jobs:
       - name: Build & install checkov package
         run: |
           pipenv --python ${{ matrix.python }}
-          # 'py' package is used in 'pytest-benchmark', but 'pytest' removed it in their latest version         
+          # 'py' package is used in 'pytest-benchmark', but 'pytest' removed it in their latest version
           pipenv run pip install pytest pytest-benchmark py
-          pipenv run pip install redefine --index-url https://redefine.dev/pip/
           pipenv run python setup.py sdist bdist_wheel
           bash -c 'pipenv run pip install dist/checkov-*.whl'
       - name: Clone terraform-aws-components
@@ -164,11 +158,7 @@ jobs:
         run: git clone https://github.com/dennyzhang/kubernetes-yaml-templates.git
         working-directory: ${{ env.working-directory }}
       - name: Run performance tests
-        env:
-          REDEFINE_AUTH: ${{ secrets.REDEFINE_AUTH }}
         run: |
-          pipenv run redefine config set stable_branches=main matrix_value=${{ matrix.os }}-${{ matrix.python}}
-          pipenv run redefine start --pytest --discover
           pipenv run pytest
         working-directory: ${{ env.working-directory }}
 
@@ -178,16 +168,16 @@ jobs:
       PYTHON_VERSION: "3.7"
       WORKING_DIRECTORY: ./dogfood_tests
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
-      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pipenv"
           cache-dependency-path: "Pipfile.lock"
-      - uses: azure/setup-helm@f382f75448129b3be48f8121b9857be18d815a82  # v3
+      - uses: azure/setup-helm@f382f75448129b3be48f8121b9857be18d815a82 # v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1  # v2
+      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1 # v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install pipenv
@@ -198,15 +188,9 @@ jobs:
         run: |
           pipenv --python ${{ env.PYTHON_VERSION }}
           pipenv run pip install pytest pytest-xdist
-          pipenv run pip install redefine --index-url https://redefine.dev/pip/
           pipenv run python setup.py sdist bdist_wheel
           bash -c 'pipenv run pip install dist/checkov-*.whl'
       - name: Run dogfood tests
-        env:
-          REDEFINE_AUTH: ${{ secrets.REDEFINE_AUTH }}
         run: |
-          pipenv run redefine config set stable_branches=main
-          pipenv run redefine start --pytest --discover
           pipenv run pytest
         working-directory: ${{ env.WORKING_DIRECTORY }}
-

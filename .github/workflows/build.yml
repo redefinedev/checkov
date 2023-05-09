@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       versionBump:
-        description: 'The part of the version to bump'
+        description: "The part of the version to bump"
         required: true
-        default: 'patch'
+        default: "patch"
         type: choice
         options:
           - patch
@@ -17,19 +17,19 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'docs/**'
-      - 'INTHEWILD.md'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.github/**'
+      - "docs/**"
+      - "INTHEWILD.md"
+      - "README.md"
+      - "CHANGELOG.md"
+      - ".github/**"
       - checkov/version.py
       - kubernetes/requirements.txt
       - coverage.svg
-      - '.swm/**'
-      - '.pre-commit-config.yaml'
+      - ".swm/**"
+      - ".pre-commit-config.yaml"
 
 concurrency:
-  group: 'build'
+  group: "build"
   cancel-in-progress: true
 
 jobs:
@@ -41,15 +41,15 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
-      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: ${{ matrix.python }}
-      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c  # v3
-      - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78  # v3
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+      - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1  # v2
+      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1 # v2
         if: ${{ runner.os != 'windows' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -60,7 +60,6 @@ jobs:
         run: |
           pipenv --python ${{ matrix.python }}
           pipenv run pip install pytest pytest-xdist
-          pipenv run pip install redefine --index-url https://redefine.dev/pip/
           pipenv run python setup.py sdist bdist_wheel
           bash -c 'pipenv run pip install dist/checkov-*.whl'
       - name: Clone Terragoat - vulnerable terraform
@@ -81,17 +80,13 @@ jobs:
           TFC_TOKEN: ${{ secrets.TFC_TOKEN }}
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       - name: Run integration tests
-        env:
-          REDEFINE_AUTH: ${{ secrets.REDEFINE_AUTH }}
         run: |
-          pipenv run redefine config set stable_branches=main matrix_value=${{ matrix.os }}-${{ matrix.python}}
-          pipenv run redefine start --pytest --discover
           pipenv run pytest integration_tests
   prisma-tests:
-    runs-on: [ self-hosted, public, linux, x64 ]
+    runs-on: [self-hosted, public, linux, x64]
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
-      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: 3.7
       - name: Install pipenv
@@ -117,15 +112,15 @@ jobs:
     timeout-minutes: 30
     runs-on: [self-hosted, public, linux, x64]
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: Set up Python 3.7
-        uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+        uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: 3.7
-      - uses: azure/setup-helm@f382f75448129b3be48f8121b9857be18d815a82  # v3
+      - uses: azure/setup-helm@f382f75448129b3be48f8121b9857be18d815a82 # v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1  # v2
+      - uses: imranismail/setup-kustomize@a76db1c6419124d51470b1e388c4b29476f495f1 # v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install pipenv
@@ -135,14 +130,10 @@ jobs:
         run: |
           pipenv --python 3.7
           pipenv install --dev
-          pipenv run pip install redefine --index-url https://redefine.dev/pip/
       - name: Test with pytest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REDEFINE_AUTH: ${{ secrets.REDEFINE_AUTH }}
         run: |
-          pipenv run redefine config set stable_branches=main
-          pipenv run redefine start --pytest --discover
           pipenv run python -m pytest tests
   bump-version:
     needs: [integration-tests, unit-tests, prisma-tests]
@@ -150,17 +141,17 @@ jobs:
     environment: release
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
         with:
           token: ${{ secrets.GH_PAT_SECRET }}
       - name: Import GPG key
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549  # v5
+        uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # v5
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
       - name: Set up Python 3.7
-        uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4
+        uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4
         with:
           python-version: 3.7
       - name: Install pipenv
@@ -195,8 +186,8 @@ jobs:
 
           echo "new tag: $new_tag"
           echo "version=$new_tag" >> "$GITHUB_OUTPUT"
-          
-          # grab major version for later image tag usage         
+
+          # grab major version for later image tag usage
           major_version=$(echo "${new_tag}" | head -c1)
           echo "major_version=$major_version" >> "$GITHUB_OUTPUT"
         id: calculateVersion
@@ -229,10 +220,10 @@ jobs:
           pipenv run python checkov/main.py --list --framework cloudformation >> "$scansdoc"
           git add "docs/5.Policy Index/*"
           git commit --reuse-message="HEAD@{1}" || echo "No changes to commit"
-          
+
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'actions@github.com'
-          
+
           new_tag=${{ steps.calculateVersion.outputs.version }}
           echo "new tag: $new_tag"
           ## update python version
@@ -248,7 +239,7 @@ jobs:
         run: |
           pipenv run python setup.py sdist bdist_wheel
       - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@c7f29f7adef1a245bd91520e94867e5c6eedddcc  # v1
+        uses: pypa/gh-action-pypi-publish@c7f29f7adef1a245bd91520e94867e5c6eedddcc # v1
         with:
           password: ${{ secrets.PYPI_TOKEN }}
       - name: sleep and wait for package to refresh
@@ -263,33 +254,33 @@ jobs:
     environment: release
     permissions:
       packages: write
-      id-token: write  # Enable OIDC
+      id-token: write # Enable OIDC
     env:
       DH_IMAGE_NAME: bridgecrew/checkov
       GHCR_IMAGE_NAME: ghcr.io/${{ github.repository }}
       FULL_IMAGE_TAG: ${{ needs.bump-version.outputs.version }}
       SHORT_IMAGE_TAG: ${{ needs.bump-version.outputs.major_version }}
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
-      - uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b  # v2
-      - uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18  # v2
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b # v2
+      - uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18 # v2
         with:
-          platforms: 'arm64,arm'
-      - uses: docker/setup-buildx-action@f03ac48505955848960e80bbb68046aa35c7b9e7  # v2
+          platforms: "arm64,arm"
+      - uses: docker/setup-buildx-action@f03ac48505955848960e80bbb68046aa35c7b9e7 # v2
       - name: Login to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: docker_meta
-        uses: docker/metadata-action@507c2f2dc502c992ad446e3d7a5dfbe311567a96  # v4
+        uses: docker/metadata-action@507c2f2dc502c992ad446e3d7a5dfbe311567a96 # v4
         with:
           images: ${{ env.DH_IMAGE_NAME }}
           labels: |
@@ -298,7 +289,7 @@ jobs:
       - name: Build and export image to Docker
         # buildx changes the driver to 'docker-container' which doesn't expose the image to the host,
         # so it is built and loaded to Docker and in the next step pushed to the registry
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671 # v4
         with:
           context: .
           no-cache: true
@@ -307,10 +298,10 @@ jobs:
           tags: ${{ env.DH_IMAGE_NAME }}:${{ env.FULL_IMAGE_TAG }}
       - name: Push Docker image
         id: docker_push
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671 # v4
         with:
           context: .
-          platforms: 'linux/amd64,linux/arm64'
+          platforms: "linux/amd64,linux/arm64"
           push: true
           labels: ${{ steps.docker_meta.outputs.labels }}
           tags: |
@@ -322,7 +313,7 @@ jobs:
             ${{ env.GHCR_IMAGE_NAME }}:${{ env.FULL_IMAGE_TAG }}
       - name: Generate SBOM
         continue-on-error: true
-        uses: bridgecrewio/checkov-action@master  # use latest and greatest
+        uses: bridgecrewio/checkov-action@master # use latest and greatest
         with:
           api-key: ${{ secrets.BC_API_KEY }}
           docker_image: ${{ env.DH_IMAGE_NAME }}:${{ env.FULL_IMAGE_TAG }}
@@ -334,7 +325,7 @@ jobs:
           # sign image
           cosign sign ${{ env.DH_IMAGE_NAME }}@${{ steps.docker_push.outputs.digest }}
           cosign sign -f ${{ env.GHCR_IMAGE_NAME }}@${{ steps.docker_push.outputs.digest }}
-          
+
           # attest SBOM
           cosign attest \
             --type cyclonedx \
@@ -345,13 +336,13 @@ jobs:
             --predicate cyclonedx.json \
             ${{ env.GHCR_IMAGE_NAME }}@${{ steps.docker_push.outputs.digest }}
         env:
-          COSIGN_EXPERIMENTAL: 1  # needed for keyless signing
+          COSIGN_EXPERIMENTAL: 1 # needed for keyless signing
   publish-checkov-k8s-dockerhub:
     runs-on: [self-hosted, public, linux, x64]
     needs: bump-version
     environment: release
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: update checkov-k8s version
         run: |
           checkov_version=${{ needs.bump-version.outputs.version }}
@@ -360,7 +351,7 @@ jobs:
           echo "major_version=$checkov_major_version" >> "$GITHUB_OUTPUT"
         id: versions
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@d2068fdcc539fd7afb855991c7d7b52f29028016  # v5
+        uses: elgohr/Publish-Docker-Github-Action@d2068fdcc539fd7afb855991c7d7b52f29028016 # v5
         with:
           name: bridgecrew/checkov-k8s
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -373,7 +364,7 @@ jobs:
     needs: bump-version
     environment: release
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: Get release version
         id: versions
         run: |
@@ -382,7 +373,7 @@ jobs:
           echo "version=$checkov_version" >> "$GITHUB_OUTPUT"
           echo "major_version=$checkov_major_version" >> "$GITHUB_OUTPUT"
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@d2068fdcc539fd7afb855991c7d7b52f29028016  # v5
+        uses: elgohr/Publish-Docker-Github-Action@d2068fdcc539fd7afb855991c7d7b52f29028016 # v5
         with:
           name: bridgecrew/checkov
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -395,7 +386,7 @@ jobs:
     runs-on: [self-hosted, public, linux, x64]
     environment: release
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
       - name: update checkov release
         run: |
           curl -X POST "https://jenkins-webhook.bridgecrew.cloud/buildByToken/build?job=Open-Source/upgrade-checkov&token=${{ secrets.BC_JENKINS_TOKEN }}"
@@ -405,4 +396,3 @@ jobs:
 
           # trigger whorf update
           curl -XPOST -u "${{ secrets.GH_PAT_USER}}:${{secrets.GH_PAT_SECRET}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/bridgecrewio/whorf/dispatches --data '{"event_type": "release"}'
-
