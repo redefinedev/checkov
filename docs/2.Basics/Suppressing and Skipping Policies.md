@@ -102,7 +102,7 @@ Resources:
       # checkov:skip=CKV_SECRET_6 or after it
 ```
 
-## CloudFormation Metadata
+### CloudFormation Metadata
 Additionally, it is possible to suppress CloudFormation checks via the `Metadata` section inside a resource.
 ```yaml
 Resources:
@@ -181,6 +181,22 @@ Check: CKV_AWS_18: "Ensure the S3 bucket has access logging enabled"
         Guide: https://docs.bridgecrew.io/docs/s3_13-enable-logging
 
 
+```
+
+### SCA
+CVEs can be suppressed using `--skip-check CKV_CVE_2022_1234` to suppress a specific CVE for that run or `--skip-cve-package package` to skip all CVEs for a specific package.
+
+For inline suppressions, depending on the package manager there are different ways to suppress CVEs. You can either suppress a CVE for all packages, all CVEs for a package or specific CVE for a package. Today, only requirements.txt is supported.
+
+#### Python - requirements.txt
+The skip comment can be anywhere
+
+```requirements.txt
+# checkov:skip=CVE-2019-19844: ignore CVE for all packages
+# checkov:skip=jinja2: all CVEs for a package
+# checkov:skip=django[CVE-2019-19844,CVE-2019-19844]: specific CVEs for a package
+django==1.2
+jinja2==3.1.0
 ```
 
 # Specifying or skipping checks for the entire run

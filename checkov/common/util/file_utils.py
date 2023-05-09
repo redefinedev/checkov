@@ -12,7 +12,7 @@ def convert_to_unix_path(path: str) -> str:
 
 def extract_tar_archive(source_path: str, dest_path: str) -> None:
     with tarfile.open(source_path) as tar:
-        tar.extractall(path=dest_path)
+        tar.extractall(path=dest_path)  # nosec  # only trusted source
 
 
 def compress_file_gzip_base64(input_path: str) -> str:
@@ -76,9 +76,9 @@ def read_file_safe(file_path: str) -> str:
 def get_file_size_safe(file_path: str) -> int:
     try:
         return os.path.getsize(file_path)
-    except Exception:
+    except Exception as e:
         logging.warning(
-            "Could not obtain file size",
+            f"Could not obtain file size, {str(e)}",
             extra={"file_path": file_path}
         )
         return -1

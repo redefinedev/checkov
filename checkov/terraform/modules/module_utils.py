@@ -15,7 +15,7 @@ from lark import Tree
 import re
 
 from checkov.common.util.consts import DEFAULT_EXTERNAL_MODULES_DIR
-from checkov.common.util.json_utils import CustomJSONEncoder
+from checkov.common.util.json_utils import CustomJSONEncoder, object_hook
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -277,12 +277,17 @@ def clean_parser_types_lst(values: list[Any]) -> list[Any]:
                 values[idx] = False
         elif isinstance(val, set):
             values[idx] = clean_parser_types_lst(list(val))
-    str_values_in_lst = [val for val in values if isinstance(val, str)]
+    str_values_in_lst = []
+    result_values = []
+    for val in values:
+        if isinstance(val, str):
+            str_values_in_lst.append(val)
+        else:
+            result_values.append(val)
     str_values_in_lst.sort()
-    result_values = [val for val in values if not isinstance(val, str)]
     result_values.extend(str_values_in_lst)
     return result_values
 
 
-def serialize_definitions(tf_definitions: dict[str, _Hcl2Payload]) -> dict[str, _Hcl2Payload]:
-    return json.loads(json.dumps(tf_definitions, cls=CustomJSONEncoder))
+def serialize_definitions(tf_definitions: _Hcl2Payload) -> _Hcl2Payload:
+    return json.loads(json.dumps(tf_definitions, cls=CustomJSONEncoder), object_hook=object_hook)

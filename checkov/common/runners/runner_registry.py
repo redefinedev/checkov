@@ -59,8 +59,14 @@ OUTPUT_DELIMITER = "\n--- OUTPUT DELIMITER ---\n"
 
 
 class RunnerRegistry:
-    def __init__(self, banner: str, runner_filter: RunnerFilter, *runners: _BaseRunner,
-                 secrets_omitter_class: Type[SecretsOmitter] = SecretsOmitter) -> None:
+    def __init__(
+        self,
+        banner: str,
+        runner_filter: RunnerFilter,
+        *runners: _BaseRunner,
+        tool: str = tool_name,
+        secrets_omitter_class: Type[SecretsOmitter] = SecretsOmitter,
+    ) -> None:
         self.logger = logging.getLogger(__name__)
         self.runner_filter = runner_filter
         self.runners = list(runners)
@@ -68,7 +74,7 @@ class RunnerRegistry:
         self.scan_reports: list[Report] = []
         self.image_referencing_runners = self._get_image_referencing_runners()
         self.filter_runner_framework()
-        self.tool = tool_name
+        self.tool = tool
         self._check_type_to_report_map: dict[str, Report] = {}  # used for finding reports with the same check type
         self.licensing_integration = licensing_integration  # can be maniuplated by unit tests
         self.secrets_omitter_class = secrets_omitter_class
@@ -370,7 +376,8 @@ class RunnerRegistry:
                     created_baseline_path=created_baseline_path,
                     baseline=baseline,
                     use_bc_ids=config.output_bc_ids,
-                    summary_position=config.summary_position
+                    summary_position=config.summary_position,
+                    openai_api_key=config.openai_api_key,
                 )
 
             self._print_to_console(
@@ -402,8 +409,9 @@ class RunnerRegistry:
                     ))
 
             if output_format == CONSOLE_OUTPUT:
-                # don't write to file, if an explicit file path was set
-                sarif.write_sarif_output()
+                if not config.output_file_path or "," in config.output_file_path:
+                    # don't write to file, if an explicit file path was set
+                    sarif.write_sarif_output()
 
                 del output_formats["sarif"]
 

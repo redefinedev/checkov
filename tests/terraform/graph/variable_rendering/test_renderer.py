@@ -178,6 +178,7 @@ class TestRenderer(TestCase):
                                      f'error during comparing {v.block_type} in attribute key: {attribute_key}')
 
     @mock.patch.dict(os.environ, {"CHECKOV_ENABLE_NESTED_MODULES": "False"})
+    @mock.patch.dict(os.environ, {"CHECKOV_NEW_TF_PARSER": "False"})
     def test_graph_rendering_order(self):
         resource_path = os.path.join(TEST_DIRNAME, "..", "resources", "module_rendering", "example")
         graph_manager = TerraformGraphManager('m', ['m'])
@@ -439,3 +440,20 @@ class TestRenderer(TestCase):
         # then
         local_b = next(vertex for vertex in local_graph.vertices if vertex.block_type == BlockType.LOCALS and vertex.name == "b")
         assert local_b.attributes["b"] == ["..."]  # not Ellipsis object
+
+    def test_default_map_value(self):
+        # given
+        resource_path = Path(TEST_DIRNAME) / "test_resources/default_map_value"
+
+        # when
+        graph_manager = TerraformGraphManager('m', ['m'])
+        local_graph, _ = graph_manager.build_graph_from_source_directory(str(resource_path), render_variables=True)
+
+        # then
+        key_vault = next(vertex for vertex in local_graph.vertices if vertex.block_type == BlockType.RESOURCE and vertex.name == "azurerm_key_vault.this")
+        assert key_vault.attributes["network_acls"] == {
+            "bypass": "AzureServices",
+            "default_action": "Deny",
+            "ip_rules": [],
+            "virtual_network_subnet_ids": []
+        }
