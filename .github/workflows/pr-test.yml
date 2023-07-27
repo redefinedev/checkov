@@ -58,6 +58,7 @@ jobs:
           pipenv --rm || true
           pipenv --python ${{ matrix.python }}
           pipenv install --dev -v
+          git rev-list --count --first-parent 4f37e218bbb51dc835f903b284ab57dc58693d1f..98280c7c7740e70770a6df3b60ee23aa998e0687
           pipenv run pip install redefine --index-url https://redefine.dev/pip/
       - name: Unit tests
         env:
