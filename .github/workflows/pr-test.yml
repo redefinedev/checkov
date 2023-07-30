@@ -37,6 +37,15 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+      - name: Fetch
+        run: |
+          git fetch origin main:main --no-tags --force --update-head-ok --depth 100
+          git fetch origin install-redefine:install-redefine --no-tags --force --update-head-ok --depth 100
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          limit-access-to-actor: true
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1 # v4
         with:
@@ -58,8 +67,6 @@ jobs:
           pipenv --rm || true
           pipenv --python ${{ matrix.python }}
           pipenv install --dev -v
-          git fetch origin main:main --no-tags --force --update-head-ok --depth 100
-          git fetch origin install-redefine:install-redefine --no-tags --force --update-head-ok --depth 100
           git rev-list --count --first-parent 4f37e218bbb51dc835f903b284ab57dc58693d1f..98280c7c7740e70770a6df3b60ee23aa998e0687
           pipenv run pip install redefine --index-url https://redefine.dev/pip/
       - name: Unit tests
