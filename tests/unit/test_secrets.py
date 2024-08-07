@@ -70,3 +70,7 @@ class TestSecrets(unittest.TestCase):
         secret = get_secrets_from_string(s)
 
         assert secret == ["AKIAIOSFODNN7EXAMPLE"]
+
+    def test_failure(self):
+        s = 'FAIL'       
+        assert s == ["SUCCESS"]        
