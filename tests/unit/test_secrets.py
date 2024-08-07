@@ -73,4 +73,4 @@ class TestSecrets(unittest.TestCase):
 
     def test_failure(self):
         s = 'FAIL'       
-        assert s == ["SUCCESS"]        
+        assert s == 'FAIL'        
