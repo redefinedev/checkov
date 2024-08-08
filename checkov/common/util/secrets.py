@@ -243,3 +243,6 @@ def get_secrets_from_string(s: str, *categories: str) -> list[str]:
         for pattern in _patterns[c]:
             secrets.extend(str(match.group()) for match in pattern.finditer(s))
     return secrets
+
+def get_something() -> bool:
+    return True    
