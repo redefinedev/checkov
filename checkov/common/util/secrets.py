@@ -243,3 +243,10 @@ def get_secrets_from_string(s: str, *categories: str) -> list[str]:
         for pattern in _patterns[c]:
             secrets.extend(str(match.group()) for match in pattern.finditer(s))
     return secrets
+
+def get_something() -> bool:
+    # define random
+    import random
+    # generate random number between 0 and 1
+    return random.random() < 0.5
+  

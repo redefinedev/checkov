@@ -1,7 +1,7 @@
 import unittest
 
 from checkov.common.util.secrets import string_has_secrets, ALL, AWS, GENERAL, omit_secret_value_from_line, \
-    get_secrets_from_string
+    get_secrets_from_string, get_something
 
 
 class TestSecrets(unittest.TestCase):
@@ -70,3 +70,15 @@ class TestSecrets(unittest.TestCase):
         secret = get_secrets_from_string(s)
 
         assert secret == ["AKIAIOSFODNN7EXAMPLE"]
+
+    def test_success(self):    
+        assert 'SUCCESS' != 'FAILURE' 
+    
+    #def test_failure(self):    
+    #    assert 'SUCCESS' == 'FAILURE' 
+
+    def test_flaky(self):   
+        # this test will fail 50% of the time.
+        # add assert that logs the result to the console
+        
+        assert get_something(), "get_something() returned False"   
