@@ -268,6 +268,7 @@ class TestRunnerValid(unittest.TestCase):
         assert len(report.passed_checks) == 0
         assert len(report.skipped_checks) == 0
         assert len(report.parsing_errors) == 0
+        assert len(report.parsing_errors) == 0
 
     def test_runner_on_permissions(self):
         # given
