@@ -230,6 +230,15 @@ def omit_secret_value_from_graph_checks(
 
 
 def get_secrets_from_string(s: str, *categories: str) -> list[str]:
+    # modify a used function, to see the affect on tests
+    d = "test"
+    a = d
+    if d == "test":
+        a = "a"
+    else:
+        a = "b"
+    
+    
     # set a default if no category is provided; or, if categories were provided and they include 'all', then just set it
     # explicitly so we don't do any duplication
     if is_hash(s):
@@ -243,3 +252,25 @@ def get_secrets_from_string(s: str, *categories: str) -> list[str]:
         for pattern in _patterns[c]:
             secrets.extend(str(match.group()) for match in pattern.finditer(s))
     return secrets
+
+def get_something() -> bool:
+    # define random
+    #import random
+    # generate random number between 0 and 1
+    #return random.random() < 0.5
+    
+    # make it constant
+    return True
+  
+
+def do_something_that_calls_something() -> bool:
+    something = get_something()
+    other_thing = get_something()
+
+    something_that_does_nothing = "no" + "thing"
+    return something == other_thing
+
+# write function that calls do_something_that_calls_something
+def do_something()-> bool:
+    return do_something_that_calls_something()
+
