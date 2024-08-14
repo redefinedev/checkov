@@ -1,5 +1,5 @@
 import unittest
-
+import time
 from checkov.common.util.secrets import string_has_secrets, ALL, AWS, GENERAL, omit_secret_value_from_line, \
     get_secrets_from_string, get_something, do_something
 
@@ -87,4 +87,9 @@ class TestSecrets(unittest.TestCase):
         # this test will fail 50% of the time.
         # add assert that logs the result to the console
         
-        assert do_something(), "do_something() returned False"   
+        for i in range(5):               
+            time.sleep(1)
+            print(f"Running test_do_something {i+1} time")
+            assert do_something(), "do_something() returned False"  
+        
+        print("test_do_something ended")

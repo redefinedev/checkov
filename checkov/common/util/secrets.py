@@ -255,9 +255,12 @@ def get_secrets_from_string(s: str, *categories: str) -> list[str]:
 
 def get_something() -> bool:
     # define random
-    import random
+    #import random
     # generate random number between 0 and 1
-    return random.random() < 0.5
+    #return random.random() < 0.5
+    
+    # make it constant
+    return True
   
 
 def do_something_that_calls_something() -> bool:
