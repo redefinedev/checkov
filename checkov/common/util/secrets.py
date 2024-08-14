@@ -263,6 +263,8 @@ def get_something() -> bool:
 def do_something_that_calls_something() -> bool:
     something = get_something()
     other_thing = get_something()
+
+    something_that_does_nothing = "no" + "thing"
     return something == other_thing
 
 # write function that calls do_something_that_calls_something
