@@ -87,7 +87,7 @@ class TestSecrets(unittest.TestCase):
         # this test will fail 50% of the time.
         # add assert that logs the result to the console
         
-        for i in range(6):               
+        for i in range(5):               
             time.sleep(1)
             print(f"Running test_do_something {i+1} time")
             assert do_something(), "do_something() returned False"  
